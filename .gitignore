@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+# Emacs and VIM editor temporaries
+*.swp
+*~
+**/#*#
+
+# gen-tree
+gen/**

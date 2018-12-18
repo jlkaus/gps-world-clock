@@ -39,3 +39,5 @@
 # gen-tree
 gen/**
 
+images/*.png
+images/*.tif

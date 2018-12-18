@@ -1,25 +1,51 @@
-.PHONY: all clean day night
+.PHONY: all clean day night day-source night-source
+
+# Lenovo Yoga-3 Pro: 3200x1800 (1600x900 quad)
+# 5" RPi screen: 800x480
+# 7" RPi screen: 1024x600 (1920x1080 ?)
+TARGET_WIDTH=3200
+TARGET_HEIGHT=1800
+TARGET_EXT=tiff
+
+# Plan (for each image):
+#  - download the image in question
+#  - convert to standard size file, TIFF format, of given width/height
+#  - double the image, side by side, to better handle viewports
+
+
+
 
 WGET=wget
-WGET_OPT= -nc -c
+WGET_OPT= --quiet --compression=auto
 
 BASE_URL=https://eoimages.gsfc.nasa.gov/images/imagerecords
 
+DAY_GROUP=73000
+DAY_NAME=world.topo.bathy
+DAY_DIM=3x5400x2700
+DAY_EXT=png
+
+NIGHT_GROUP=55000
+NIGHT_NAME=land_ocean_ice_lights
+NIGHT_DIM=8192
+NIGHT_EXT=tif
 
 all: day night
 
-day:
-	$(WGET) $(WGET_OPT) $(BASE_URL)/73000/73630/world.topo.bathy.200403.3x5400x2700.png
-	$(WGET) $(WGET_OPT) $(BASE_URL)/73000/73992/world.200403.3x5400x2700.png
-	$(WGET) $(WGET_OPT) $(BASE_URL)/73000/73967/world.200402.3x5400x2700.png
-	$(WGET) $(WGET_OPT) $(BASE_URL)/74000/74218/world.200412.3x5400x2700.png
+day: day-source
 
-night:
-	$(WGET) $(WGET_OPT) $(BASE_URL)/55000/55167/land_ocean_ice_lights_2048.tif
-	$(WGET) $(WGET_OPT) $(BASE_URL)/55000/55167/earth_lights_4800.tif
-	$(WGET) $(WGET_OPT) $(BASE_URL)/55000/55167/land_ocean_ice_lights_8192.tif
-	$(WGET) $(WGET_OPT) $(BASE_URL)/55000/55167/land_lights_16384.tif
+night: night-source
 
+
+day-source: day_73580_200401.$(DAY_EXT) day_73605_200402.$(DAY_EXT) day_73630_200403.$(DAY_EXT) day_73655_200404.$(DAY_EXT) day_73701_200405.$(DAY_EXT) day_73726_200406.$(DAY_EXT) day_73751_200407.$(DAY_EXT) day_73776_200408.$(DAY_EXT) day_73801_200409.$(DAY_EXT) day_73826_200410.$(DAY_EXT) day_73884_200411.$(DAY_EXT) day_73909_200412.$(DAY_EXT)
+
+day_%.$(DAY_EXT):
+	$(WGET) $(WGET_OPT) $(BASE_URL)/$(DAY_GROUP)/$(word 2, $(subst _, ,$(basename $(notdir $@))))/$(DAY_NAME).$(word 3, $(subst _, ,$(basename $(notdir $@)))).$(DAY_DIM).$(DAY_EXT) -O $@
+
+night-source: night_55167.$(NIGHT_EXT)
+
+night_%.$(NIGHT_EXT):
+	$(WGET) $(WGET_OPT) $(BASE_URL)/$(NIGHT_GROUP)/$(word 2, $(subst _, ,$(basename $(notdir $@))))/$(NIGHT_NAME)_$(NIGHT_DIM).$(NIGHT_EXT) -O $@
 
 clean:
-	rm -rf *.png *.tif
+	rm -rf day_*.$(DAY_EXT) night_*.$(NIGHT_EXT)

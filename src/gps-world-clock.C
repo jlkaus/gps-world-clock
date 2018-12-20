@@ -54,6 +54,8 @@ int backlight_level(int l) {
   // /sys/class/backlight/{acpi_video0,intel_backlight}/brightness
   // 0 - max_brightness
   // => actual_brightness
+  // xbacklight -display $DISPLAY -set $PERCENT
+
 }
 
 int gps_init() {

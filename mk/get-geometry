@@ -1,0 +1,5 @@
+#!/bin/bash
+
+xwininfo -root 2>/dev/null |grep -e geometry |awk '{print $2}'|sed -e 's/\+.*$//;'
+
+exit 0

@@ -1,0 +1,18 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my $kernel_type = `uname -s`;
+chomp $kernel_type;
+my $machine_type = `uname -m`;
+chomp $machine_type;
+
+print lc $kernel_type;
+print "-";
+print $machine_type;
+print "\n";
+
+
+exit(0);
+ 

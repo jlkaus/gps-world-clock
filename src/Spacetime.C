@@ -29,17 +29,19 @@
 
 
 int gps_init() {
-  struct gps_data_t *gd;
+  struct gps_data_t *gd = nullptr;
   gps_open(GPSD_SHARED_MEMORY, NULL, gd);
+  return 0;
 }
 
 int gps_done(struct gps_data_t *gd) {
   gps_close(gd);
+  return 0;
 }
 
 int gps_update(struct gps_data_t *gd) {
   gps_read(gd, NULL, 0);
-
+  return 0;
   // gps_data_t:
   //   gps_mask_t set
   //   timestamp_t online

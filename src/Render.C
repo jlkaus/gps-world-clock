@@ -37,10 +37,12 @@
 
 int load_image(const char *fn) {
   IMG_Load(fn);
+  return 0;
 }
 
 int load_font(const char *fn) {
   TTF_OpenFont(fn, 16);
+  return 0;
 }
 
 

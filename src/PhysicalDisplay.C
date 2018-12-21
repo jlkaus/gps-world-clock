@@ -7,6 +7,9 @@
 
 #include <PhysicalDisplay.H>
 
+// Need to support:
+// - forcing the display on and off
+// - adjusting the backlight amount
 
 
 int dpms_init() {

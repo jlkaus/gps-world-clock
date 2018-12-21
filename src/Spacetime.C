@@ -6,6 +6,27 @@
 
 #include <Spacetime.H>
 
+// Support a thread to update GPS data fairly consistently
+// If no GPS available, use system time & latitude/longitude that was
+//   passed in as parameters, or default to South Ridge or something?
+// Support retrieving:
+// - current UTC timestamp
+// - current local timezone timestamp
+// - current true local timestamp
+// - current location
+// - current satellite info (if relevant)
+// - current location uncertainty
+// Support calculation of:
+// - terminator equations
+// - local dawn/sunrise/transit/sunset/dusk/midnight (including astronomical, civil, and nautical twilight) 
+// - length of day and night
+// - hour/watch divisions
+// - point of sun overhead
+// - point of moon overhead
+// - local moonrise/transit/moonset
+
+
+
 
 int gps_init() {
   struct gps_data_t *gd;

@@ -22,11 +22,13 @@ install-dir: clean-install
 	$(MAKE) -C $(CURDIR) DESTDIR=$(INSTALLDIR) install
 
 package: install-dir
-	$(TAR) cf $(ROOTDIR)/gen/$(PKGNAME)-$(VERSION)-$(TARGET_ARCH_TYPE).tar.gz -C $(INSTALLDIR) .
+	cd $(INSTALLDIR) && $(TAR) czf $(ROOTDIR)/gen/$(PKGNAME)-$(VERSION)-$(TARGET_ARCH_TYPE).tar.gz *
 
 install: images exec
-	$(INSTALL) -D -m 755 -t $(DESTDIR)$(bindir)/$(PKGNAME) $(ROOTDIR)/gen/exec/$(TARGET_ARCH_TYPE)/$(PKGNAME)
-	$(INSTALL) -D -m 644 -t $(DESTDIR)$(datadir)/$(PKGNAME) $(ROOTDIR)/gen/images/$(TARGET_GEOMETRY)/*
+	$(INSTALL) -D -m 755 -t $(DESTDIR)$(bindir)/ $(ROOTDIR)/gen/exec/$(TARGET_ARCH_TYPE)/$(PKGNAME)
+	$(INSTALL) -d $(DESTDIR)$(datadir)/$(PKGNAME)
+	$(CP) -r $(ROOTDIR)/gen/images/* $(DESTDIR)$(datadir)/$(PKGNAME)/
+	$(CHMOD) -R a+Xr,g-w,o-w $(DESTDIR)$(datadir)/$(PKGNAME)
 
 uninstall:
 	$(RM) $(DESTDIR)$(bindir)/$(PKGNAME)

@@ -1,4 +1,4 @@
-.PHONY: all exec images clean distclean mostlyclean package install uninstall distclean-images distclean-exec mostlyclean-images mostlyclean-exec clean-exec clean-images clean-install install-dir distclean-install mostlyclean-install
+.PHONY: all exec images clean distclean mostlyclean package install uninstall distclean-images distclean-exec mostlyclean-images mostlyclean-exec clean-exec clean-images clean-install install-dir distclean-install mostlyclean-install images-all
 
 ifndef ROOTDIR
 ROOTDIR := $(CURDIR)
@@ -16,6 +16,15 @@ exec:
 
 images:
 	$(MAKE) -C $(ROOTDIR)/images -j8 all
+
+images-all:
+	$(MAKE) -C $(ROOTDIR)/images -j8 all TARGET_GEOMETRY=1200x720
+	$(MAKE) -C $(ROOTDIR)/images -j8 all TARGET_GEOMETRY=800x480
+	$(MAKE) -C $(ROOTDIR)/images -j8 all TARGET_GEOMETRY=1024x600
+	$(MAKE) -C $(ROOTDIR)/images -j8 all TARGET_GEOMETRY=3200x1800
+	$(MAKE) -C $(ROOTDIR)/images -j8 all TARGET_GEOMETRY=1600x900
+	$(MAKE) -C $(ROOTDIR)/images -j8 all TARGET_GEOMETRY=1920x1080
+
 
 install-dir: clean-install
 	$(MKDIR) -p $(INSTALLDIR)

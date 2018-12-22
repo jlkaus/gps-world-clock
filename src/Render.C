@@ -32,6 +32,7 @@
 // - add satellite info
 // - only handle updating the images/terminator/timezone lines/location crosshairs/sun location/moon location icons at a much less frquent interval
 // - timestamps, location text, satellite info text can be updated every second.
+// - handle touch events, potentially changing the display somehow?
 
 
 

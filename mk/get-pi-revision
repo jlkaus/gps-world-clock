@@ -33,6 +33,7 @@ $no_args = undef if scalar keys %args;
 my %models = ();
 while(<DATA>) {
   chomp;
+  next if /^\s*$/ || /^\s*#/;
   my ($rev, $rel, $mod, $pcb, $mfg) = split /\t/;
   $models{$rev} = {rel=>$rel, mod=>$mod, pcb=>$pcb, mfg=>$mfg}:
 }
@@ -45,6 +46,8 @@ my ($rev) = `cat /proc/cpuinfo |grep -e '^Revision' | head -n 1`;
 chomp $rev;
 $rev =~ s/^Revision\s*:\s*(?:1000)?//;
 
+
+# Figure out what to display given the arguments
 my @display = ();
 push @display, $rev if($no_args || $args{rev})); 
 if(defined $models{$rev}) {
@@ -61,6 +64,8 @@ if(defined $models{$rev}) {
   push @display, "unknown-revision";
 }
 
+
+# Actually do the display
 print join(' ',@display)."\n";
 
 exit(0);

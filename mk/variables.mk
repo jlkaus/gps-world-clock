@@ -53,6 +53,8 @@ DEFAULT_GEOMETRY ?= $(TARGET_GEOMETRY)
 # 5" RPi screen: 800x480 [184 dpi]
 # 7" RPi screen: 1024x600 (1920x1080 ?)
 # 5" segment of lenovo screen: 1200x720
+# Samsung 4K monitor (28"): 3840x2160 (1920x1080 quad) [158 dpi]
+# 5" segment of samsung 4k screen: 680x400
 
 DEFAULT_LOCATION ?= "43.761463,-90.490470"
 # 43.761463,-90.490470 - The South Ridge cemetary

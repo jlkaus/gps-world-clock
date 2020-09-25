@@ -1,4 +1,4 @@
-.PHONY: all exec images clean distclean mostlyclean package install uninstall distclean-images distclean-exec mostlyclean-images mostlyclean-exec clean-exec clean-images clean-install install-dir distclean-install mostlyclean-install images-all
+.PHONY: all exec images test clean distclean mostlyclean package install uninstall distclean-images distclean-exec mostlyclean-images mostlyclean-exec clean-exec clean-images clean-install install-dir distclean-install mostlyclean-install images-all
 
 ifndef ROOTDIR
 ROOTDIR := $(CURDIR)
@@ -10,6 +10,9 @@ include $(ROOTDIR)/mk/variables.mk
 INSTALLDIR := $(ROOTDIR)/gen/install
 
 all: images exec
+
+test:
+	$(MAKE) -C $(ROOTDIR)/src test
 
 exec:
 	$(MAKE) -C $(ROOTDIR)/src all

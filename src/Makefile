@@ -1,6 +1,8 @@
 ifneq (exec,$(notdir $(patsubst %/,%,$(dir $(CURDIR)))))
 include $(CURDIR)/../mk/target.mk
 else
+.PHONY: all test 
+
 include $(ROOTDIR)/mk/variables.mk
 
 INCDIR := $(ROOTDIR)/include
@@ -19,6 +21,13 @@ CXXFLAGS = -std=gnu++11 -I$(INCDIR) -Wall -Werror $(CXXDEFS)
 LDLIBS = -lgps -lX11 -lXext -lSDL -lSDL_image -lSDL_ttf -lpthread -lm
 
 all: $(PKGNAME)
+
+test: unit-test
+
+unit-test: unit-test.o
+	$(LINK.cc) $^ $(LOADLIBES) $(LDLIBS) -o $@
+
+unit-test.o: unit-test.C
 
 $(PKGNAME): $(PKGNAME).o Spacetime.o Render.o PhysicalDisplay.o
 	$(LINK.cc) $^ $(LOADLIBES) $(LDLIBS) -o $@

@@ -13,7 +13,7 @@ ifndef VERSION
 VERSION := $(shell cat $(ROOTDIR)/VERSION)
 export VERSION
 endif
-ifndef TARGET_GEOMTRY
+ifndef TARGET_GEOMETRY
 TARGET_GEOMETRY := $(shell $(ROOTDIR)/mk/get-geometry)
 export TARGET_GEOMETRY
 endif

@@ -18,31 +18,57 @@
 #include <X11/Xlib.h>
 #include <X11/extensions/dpms.h>
 
+#include "font-support.H"
+
 #define xstr(s) str(s)
 #define str(s) #s
 
-#define SCREEN_WIDTH 1200
-#define SCREEN_HEIGHT 720
-#define FONT_SIZE 48
+#define FONT_SIZE 24
 #define TARGET_FPS 60.0
 
 // Earth rotations per second
 #define SCROLL_RATE (1.0/(60.0))
 
 int main(int argc, char *argv[]) {
+
+
+  uint32_t sw = 0;
+  uint32_t sh = 0;
+  uint32_t sx = 0;
+  uint32_t sy = 0;
+  const char *ga = xstr(DEFAULT_GEOMETRY);
+  if(argc > 2 && strncmp(argv[1], "-g", 2) == 0) {
+    ga = argv[2];
+  }
+
+  if(ga) {
+    int count = sscanf(ga, "%ux%u+%u+%u", &sw, &sh, &sx, &sy);
+    printf("Looking at [%s] for geometry and found %d values.\n", ga, count);
+  } else {
+    printf("No DEFAULT_GEOMETRY set at build time?\n");
+    exit(1);
+  }
+
+  printf("Going with geometry %ux%u+%u+%u\n", sw, sh, sx, sy);
+
+  char geo_dir[64];
+  snprintf(geo_dir, 64, "gen/images/%ux%u", sw, sh);
+  std::string geo_dir_str(geo_dir);
+
   SDL_Init(SDL_INIT_VIDEO);
   IMG_Init(IMG_INIT_PNG|IMG_INIT_TIF);
   TTF_Init();
 
-  SDL_Window *w = SDL_CreateWindow("Unit Test", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+  SDL_Window *w = SDL_CreateWindow("Unit Test", sx, sy, sw, sh, SDL_WINDOW_SHOWN);
   SDL_Renderer *r = SDL_CreateRenderer(w, -1, SDL_RENDERER_ACCELERATED);
 
   
-  TTF_Font *f = TTF_OpenFont("/usr/share/fonts/TTF/DejaVuSansMono-Bold.ttf", FONT_SIZE);
-  SDL_Surface *in = IMG_Load("gen/images/" xstr(SCREEN_WIDTH) "x" xstr(SCREEN_HEIGHT) "/doublenight.tiff");
+  TTF_Font *f = TTF_OpenFont(findFont("DejaVuSansMono-Bold").c_str(), FONT_SIZE);
+
+  SDL_Surface *in = IMG_Load((geo_dir_str + "/doublenight.tiff").c_str());
   SDL_Texture *tn = SDL_CreateTextureFromSurface(r, in);
   SDL_FreeSurface(in);
-  SDL_Surface *id = IMG_Load("gen/images/" xstr(SCREEN_WIDTH) "x" xstr(SCREEN_HEIGHT) "/doubleday_09.tiff");
+  SDL_Surface *id = IMG_Load((geo_dir_str + "/doubleday_09.tiff").c_str());
   SDL_Texture *td = SDL_CreateTextureFromSurface(r, id);
   SDL_FreeSurface(id);
 
@@ -97,7 +123,7 @@ int main(int argc, char *argv[]) {
     SDL_SetRenderDrawColor(r, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(r);
     
-    SDL_Rect st = {(int)offset,0,SCREEN_WIDTH,SCREEN_HEIGHT};
+    SDL_Rect st = {(int)offset,0,(int)sw,(int)sh};
     SDL_RenderCopy(r, t, &st, NULL);
 
     if(last_start > 0) {
@@ -115,16 +141,16 @@ int main(int argc, char *argv[]) {
       SDL_Surface *s = TTF_RenderText_Blended(f, buf, {0x3f,0xff,0x3f,0});
       SDL_Texture *tt = SDL_CreateTextureFromSurface(r, s);
     
-      SDL_Rect stt = {50,SCREEN_HEIGHT - s->h - 50,s->w, s->h};
+      SDL_Rect stt = {50,(int)sh - s->h - 50,s->w, s->h};
       SDL_RenderCopy(r, tt, NULL, &stt);
 
       SDL_FreeSurface(s);
       SDL_DestroyTexture(tt);
 
-      double delta_offset = (double)(render_start - last_start)/1000.0 * cur_speed * (double)SCREEN_WIDTH;
+      double delta_offset = (double)(render_start - last_start)/1000.0 * cur_speed * (double)sw;
       offset += delta_offset;
-      while(offset > (double)SCREEN_WIDTH) {
-	offset -= (double)SCREEN_WIDTH;
+      while(offset > (double)sw) {
+	offset -= (double)sw;
       }
       //      printf("Cur_speed = %9.3f, dt %u, do %9.3f, Offset = %9.3f\n", cur_speed, render_start-last_start, delta_offset, offset);
     }

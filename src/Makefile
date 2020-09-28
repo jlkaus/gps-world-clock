@@ -18,23 +18,23 @@ VPATH = $(SRCDIR)
 
 CXXDEFS = -DDEFAULT_IMAGE_ROOTDIR=$(DEFAULT_IMAGE_ROOTDIR) -DDEFAULT_GEOMETRY=$(DEFAULT_GEOMETRY) -DDEFAULT_LOCATION=$(DEFAULT_LOCATION) -DDEFAULT_DISPLAY_MODE=$(DEFAULT_DISPLAY_MODE) -DDEFAULT_LOCATION_MODE=$(DEFAULT_LOCATION_MODE) -DVERSION=$(VERSION) -DPKGNAME=$(PKGNAME) -DARCH=$(TARGET_ARCH_TYPE)
 CXXFLAGS = -std=gnu++11 -I$(INCDIR) -Wall -Werror $(CXXDEFS)
-LDLIBS = -lgps -lX11 -lXext -lSDL2 -lSDL2_image -lSDL2_ttf -lpthread -lm
+LDLIBS = -lgps -lX11 -lXext -lSDL2 -lSDL2_image -lSDL2_ttf -lpthread -lm -lfontconfig
 
 all: $(PKGNAME)
 
 test: unit-test
 
-unit-test: unit-test.o
+unit-test: unit-test.o font-support.o
 	$(LINK.cc) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
-unit-test.o: unit-test.C
+unit-test.o: unit-test.C $(INCDIR)/font-support.H
 
-$(PKGNAME): $(PKGNAME).o Spacetime.o Render.o PhysicalDisplay.o
+$(PKGNAME): $(PKGNAME).o Spacetime.o Render.o PhysicalDisplay.o font-support.o
 	$(LINK.cc) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
 $(PKGNAME).o: $(PKGNAME).C $(INCDIR)/Render.H
 
-Render.o: Render.C $(INCDIR)/Render.H $(INCDIR)/Spacetime.H $(INCDIR)/PhysicalDisplay.H
+Render.o: Render.C $(INCDIR)/Render.H $(INCDIR)/Spacetime.H $(INCDIR)/PhysicalDisplay.H $(INCDIR)/font-support.H
 
 PhysicalDisplay.o: PhysicalDisplay.C $(INCDIR)/PhysicalDisplay.H $(INCDIR)/Spacetime.H
 

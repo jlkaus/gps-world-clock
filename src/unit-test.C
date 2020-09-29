@@ -128,6 +128,8 @@ int main(int argc, char *argv[]) {
 	}
       } else if(e.type == SDL_MOUSEBUTTONDOWN) {
 	printf("Event SDL_MOUSEBUTTONDOWN (%d)@(%d,%d)\n", e.button.button, e.button.x, e.button.y);
+      } else if(e.type == SDL_MOUSEBUTTONUP) {
+	printf("Event SDL_MOUSEBUTTONUP (%d)@(%d,%d)\n", e.button.button, e.button.x, e.button.y);
       } else if(e.type == SDL_FINGERDOWN) {
 	// printf("Event SDL_FINGERDOWN (%ld)@(%f,%f)\n", e.tfinger.touchId, e.tfinger.x, e.tfinger.y);
       }

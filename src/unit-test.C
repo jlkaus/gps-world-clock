@@ -24,7 +24,7 @@
 #define str(s) #s
 
 #define FONT_SIZE 24
-#define TARGET_FPS 60.0
+#define TARGET_FPS 61.0
 
 // Earth rotations per second
 #define SCROLL_RATE (1.0/(60.0))

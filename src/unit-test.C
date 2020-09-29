@@ -30,8 +30,6 @@
 #define SCROLL_RATE (1.0/(60.0))
 
 int main(int argc, char *argv[]) {
-
-
   uint32_t sw = 0;
   uint32_t sh = 0;
   uint32_t sx = 0;
@@ -62,12 +60,22 @@ int main(int argc, char *argv[]) {
   SDL_Window *w = SDL_CreateWindow("Unit Test", sx, sy, sw, sh, SDL_WINDOW_SHOWN);
   SDL_Renderer *r = SDL_CreateRenderer(w, -1, SDL_RENDERER_ACCELERATED);
 
-  
+  SDL_GL_SetSwapInterval(0);
+  SDL_RendererInfo info;
+  SDL_GetRendererInfo(r, &info);
+  printf("Name: %s\n", info.name);
+  printf("Flags: %u\n", info.flags);
+  if(info.flags & SDL_RENDERER_SOFTWARE) printf("SDL_RENDERER_SOFTWARE\n");
+  if(info.flags & SDL_RENDERER_ACCELERATED) printf("SDL_RENDERER_ACCELERATED\n");
+  if(info.flags & SDL_RENDERER_PRESENTVSYNC) printf("SDL_RENDERER_PRESENTVSYNC\n");
+  if(info.flags & SDL_RENDERER_TARGETTEXTURE) printf("SDL_RENDERER_TARGETTEXTURE\n");
+
   TTF_Font *f = TTF_OpenFont(findFont("DejaVuSansMono-Bold").c_str(), FONT_SIZE);
 
   SDL_Surface *in = IMG_Load((geo_dir_str + "/doublenight.tiff").c_str());
   SDL_Texture *tn = SDL_CreateTextureFromSurface(r, in);
   SDL_FreeSurface(in);
+
   SDL_Surface *id = IMG_Load((geo_dir_str + "/doubleday_09.tiff").c_str());
   SDL_Texture *td = SDL_CreateTextureFromSurface(r, id);
   SDL_FreeSurface(id);

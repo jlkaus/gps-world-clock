@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
   SDL_Window *w = SDL_CreateWindow("Unit Test", sx, sy, sw, sh, SDL_WINDOW_SHOWN);
   SDL_Renderer *r = SDL_CreateRenderer(w, -1, SDL_RENDERER_ACCELERATED);
 
-  SDL_GL_SetSwapInterval(0);
+  SDL_GL_SetSwapInterval(1);
   SDL_RendererInfo info;
   SDL_GetRendererInfo(r, &info);
   printf("Name: %s\n", info.name);
@@ -86,17 +86,22 @@ int main(int argc, char *argv[]) {
 
   bool quit = false;
   size_t count = 0;
-  uint32_t start_time = SDL_GetTicks();
+  struct timespec start_time;
+  clock_gettime(CLOCK_MONOTONIC, &start_time);
   double target_fps = TARGET_FPS;
   SDL_Texture *t = td;
-  uint32_t last_start = 0;
-  uint32_t last_end = 0;
+  struct timespec last_start;
+  memset(&last_start, 0, sizeof(struct timespec));
+  struct timespec last_end;
+  memset(&last_end, 0, sizeof(struct timespec));
+
   uint32_t total_consumed = 0;
   double offset = 0.0;
   double cur_speed = SCROLL_RATE;
   while(!quit) {
-    uint32_t render_start = SDL_GetTicks();
-    uint32_t ticks_per_frame = (uint32_t)(1000.0/target_fps);
+    struct timespec render_start;
+    clock_gettime(CLOCK_MONOTONIC, &render_start);
+    uint32_t ticks_per_frame = (uint32_t)(1e9/target_fps);
     SDL_Event e;
     while(SDL_PollEvent(&e) != 0) {
       if(e.type == SDL_QUIT) {
@@ -134,16 +139,16 @@ int main(int argc, char *argv[]) {
     SDL_Rect st = {(int)offset,0,(int)sw,(int)sh};
     SDL_RenderCopy(r, t, &st, NULL);
 
-    if(last_start > 0) {
+    if(last_start.tv_sec > 0 && last_start.tv_nsec > 0) {
       char buf[128];
-      uint32_t ticks_consumed = last_end - last_start;
+      uint32_t ticks_consumed = 1e9*(last_end.tv_sec - last_start.tv_sec) + (last_end.tv_nsec - last_start.tv_nsec);
       total_consumed += ticks_consumed;
       if(ticks_consumed == 0) {
 	ticks_consumed = 1;
       }
       snprintf(buf, 128, "FPS: %8.3f MAX: %8.3f RPM: %8.3f",
-	       1000.0/(render_start - last_start),
-	       1000.0/(ticks_consumed),
+	       1e9/(1e9*(render_start.tv_sec - last_start.tv_sec) + (render_start.tv_nsec - last_start.tv_nsec)),
+	       1e9/(ticks_consumed),
 	       cur_speed * 60.0);
       
       SDL_Surface *s = TTF_RenderText_Blended(f, buf, {0x3f,0xff,0x3f,0});
@@ -155,7 +160,7 @@ int main(int argc, char *argv[]) {
       SDL_FreeSurface(s);
       SDL_DestroyTexture(tt);
 
-      double delta_offset = (double)(render_start - last_start)/1000.0 * cur_speed * (double)sw;
+      double delta_offset = (double)(1e9*(render_start.tv_sec - last_start.tv_sec) + (render_start.tv_nsec - last_start.tv_nsec))/1e9 * cur_speed * (double)sw;
       offset += delta_offset;
       while(offset > (double)sw) {
 	offset -= (double)sw;
@@ -166,16 +171,23 @@ int main(int argc, char *argv[]) {
     SDL_RenderPresent(r);
 
     ++count;
-    uint32_t render_end = SDL_GetTicks();
+    struct timespec render_end;
+    clock_gettime(CLOCK_MONOTONIC, &render_end);
 
-    if(render_end - render_start <= ticks_per_frame) {
-      SDL_Delay(render_start + ticks_per_frame - render_end);
+    struct timespec target_ts;
+    target_ts.tv_sec = render_start.tv_sec;
+    target_ts.tv_nsec = render_start.tv_nsec + ticks_per_frame;
+    while(target_ts.tv_nsec >= 1e9) {
+      target_ts.tv_nsec -= 1e9;
+      target_ts.tv_sec += 1;
     }
+    while(clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &target_ts, NULL) == EINTR);
 
-    last_start = render_start;
-    last_end = render_end;
+    memcpy(&last_start, &render_start, sizeof(struct timespec));
+    memcpy(&last_end, &render_end, sizeof(struct timespec));
   }
-  uint32_t end_time = SDL_GetTicks();
+  struct timespec end_time;
+  clock_gettime(CLOCK_MONOTONIC, &end_time);
   
   TTF_CloseFont(f);
   
@@ -188,7 +200,7 @@ int main(int argc, char *argv[]) {
   IMG_Quit();
   SDL_Quit();
 
-  printf("Generated %zu frames, average fps: %f, max fps: %f\n", count, (double)count*1000/(double)(end_time - start_time), 1000.0*count/total_consumed);
+  printf("Generated %zu frames, average fps: %f, max fps: %f\n", count, (double)count*1e9/(double)(1e9*(end_time.tv_sec - start_time.tv_sec) + (end_time.tv_nsec - start_time.tv_nsec)), 1e9*count/total_consumed);
 
 
   // Test DPMS control status, off, on

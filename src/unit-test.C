@@ -23,13 +23,13 @@
 #define xstr(s) str(s)
 #define str(s) #s
 
-#define FONT_SIZE 24
 #define TARGET_FPS 61.0
 
 // Earth rotations per second
 #define SCROLL_RATE (1.0/(60.0))
 
 int main(int argc, char *argv[]) {
+  int fontsize = 24;
   uint32_t sw = 0;
   uint32_t sh = 0;
   uint32_t sx = 0;
@@ -47,8 +47,11 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
+  fontsize = (int)((double)sw/800.0 * 24.0);
+  
   printf("Going with geometry %ux%u+%u+%u\n", sw, sh, sx, sy);
-
+  printf("Fontsize: %d\n", fontsize);
+  
   char geo_dir[64];
   snprintf(geo_dir, 64, "gen/images/%ux%u", sw, sh);
   std::string geo_dir_str(geo_dir);
@@ -70,7 +73,7 @@ int main(int argc, char *argv[]) {
   if(info.flags & SDL_RENDERER_PRESENTVSYNC) printf("SDL_RENDERER_PRESENTVSYNC\n");
   if(info.flags & SDL_RENDERER_TARGETTEXTURE) printf("SDL_RENDERER_TARGETTEXTURE\n");
 
-  TTF_Font *f = TTF_OpenFont(findFont("DejaVuSansMono-Bold").c_str(), FONT_SIZE);
+  TTF_Font *f = TTF_OpenFont(findFont("DejaVuSansMono-Bold").c_str(), fontsize);
 
   SDL_Surface *in = IMG_Load((geo_dir_str + "/doublenight.tiff").c_str());
   SDL_Texture *tn = SDL_CreateTextureFromSurface(r, in);
@@ -135,7 +138,7 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    SDL_SetRenderDrawColor(r, 0xFF, 0xFF, 0xFF, 0xFF);
+    SDL_SetRenderDrawColor(r, 0x0, 0x0, 0x0, 0x0);
     SDL_RenderClear(r);
     
     SDL_Rect st = {(int)offset,0,(int)sw,(int)sh};
@@ -153,7 +156,7 @@ int main(int argc, char *argv[]) {
 	       1e9/(ticks_consumed),
 	       cur_speed * 60.0);
       
-      SDL_Surface *s = TTF_RenderText_Blended(f, buf, {0x3f,0xff,0x3f,0});
+      SDL_Surface *s = TTF_RenderText_Blended(f, buf, {0xcc,0x55,0x0,0x0});
       SDL_Texture *tt = SDL_CreateTextureFromSurface(r, s);
     
       SDL_Rect stt = {50,(int)sh - s->h - 50,s->w, s->h};

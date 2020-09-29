@@ -18,15 +18,15 @@ exec:
 	$(MAKE) -C $(ROOTDIR)/src all
 
 images:
-	$(MAKE) -C $(ROOTDIR)/images -j8 all
+	$(MAKE) -C $(ROOTDIR)/images -j$(nproc) all
 
 images-all:
-	$(MAKE) -C $(ROOTDIR)/images -j8 all TARGET_GEOMETRY=1200x720
-	$(MAKE) -C $(ROOTDIR)/images -j8 all TARGET_GEOMETRY=800x480
-	$(MAKE) -C $(ROOTDIR)/images -j8 all TARGET_GEOMETRY=1024x600
-	$(MAKE) -C $(ROOTDIR)/images -j8 all TARGET_GEOMETRY=3200x1800
-	$(MAKE) -C $(ROOTDIR)/images -j8 all TARGET_GEOMETRY=1600x900
-	$(MAKE) -C $(ROOTDIR)/images -j8 all TARGET_GEOMETRY=1920x1080
+	$(MAKE) -C $(ROOTDIR)/images -j$(nproc) all TARGET_GEOMETRY=1200x720
+	$(MAKE) -C $(ROOTDIR)/images -j$(nproc) all TARGET_GEOMETRY=800x480
+	$(MAKE) -C $(ROOTDIR)/images -j$(nproc) all TARGET_GEOMETRY=1024x600
+	$(MAKE) -C $(ROOTDIR)/images -j$(nproc) all TARGET_GEOMETRY=3200x1800
+	$(MAKE) -C $(ROOTDIR)/images -j$(nproc) all TARGET_GEOMETRY=1600x900
+	$(MAKE) -C $(ROOTDIR)/images -j$(nproc) all TARGET_GEOMETRY=1920x1080
 
 
 install-dir: clean-install

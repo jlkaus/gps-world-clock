@@ -7,7 +7,7 @@
 #include <thread>
 #include <atomic>
 #include <time.h>
-
+#include <unistd.h>
 
 #include <gps.h>
 
@@ -34,7 +34,17 @@ int main(int argc, char *argv[]) {
   uint32_t sh = 0;
   uint32_t sx = 0;
   uint32_t sy = 0;
-  const char *ga = xstr(DEFAULT_GEOMETRY);
+
+  Display *xd = XOpenDisplay(NULL);
+  int xsi = XDefaultScreen(xd);
+  sw = XDisplayWidth(xd, xsi);
+  sh = XDisplayHeight(xd, xsi);
+  int swmm = XDisplayWidthMM(xd, xsi);
+  int shmm = XDisplayHeightMM(xd, xsi);
+
+  printf("Default screen found %ux%u (%d mm x %d mm)\n", sw, sh, swmm, shmm);
+  
+  const char *ga = NULL; //xstr(DEFAULT_GEOMETRY);
   if(argc > 2 && strncmp(argv[1], "-g", 2) == 0) {
     ga = argv[2];
   }
@@ -42,9 +52,6 @@ int main(int argc, char *argv[]) {
   if(ga) {
     int count = sscanf(ga, "%ux%u+%u+%u", &sw, &sh, &sx, &sy);
     printf("Looking at [%s] for geometry and found %d values.\n", ga, count);
-  } else {
-    printf("No DEFAULT_GEOMETRY set at build time?\n");
-    exit(1);
   }
 
   fontsize = (int)((double)sw/800.0 * 24.0);
@@ -61,9 +68,9 @@ int main(int argc, char *argv[]) {
   TTF_Init();
 
   SDL_Window *w = SDL_CreateWindow("Unit Test", sx, sy, sw, sh, SDL_WINDOW_SHOWN);
-  SDL_Renderer *r = SDL_CreateRenderer(w, -1, SDL_RENDERER_ACCELERATED);
+  SDL_Renderer *r = SDL_CreateRenderer(w, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-  SDL_GL_SetSwapInterval(1);
+  //  SDL_GL_SetSwapInterval(1);
   SDL_RendererInfo info;
   SDL_GetRendererInfo(r, &info);
   printf("Name: %s\n", info.name);
@@ -98,6 +105,7 @@ int main(int argc, char *argv[]) {
   struct timespec last_end;
   memset(&last_end, 0, sizeof(struct timespec));
 
+  uint32_t last_button_timestamp = 0;
   uint32_t total_consumed = 0;
   double offset = 0.0;
   double cur_speed = SCROLL_RATE;
@@ -128,11 +136,37 @@ int main(int argc, char *argv[]) {
 	  target_fps += 1;
 	} else if(e.key.keysym.sym == SDLK_MINUS) {
 	  target_fps -= 1;
+	} else if(e.key.keysym.sym == SDLK_p) {
+	  BOOL onoff = false;
+	  CARD16 state;
+	  DPMSInfo(xd, &state, &onoff);
+	  if (!onoff) {
+	    printf("DPMS disabled\n");
+	  } else {
+	    switch (state) {
+	    case DPMSModeOn:        printf("DPMSModeOn\n"); break;    
+	    case DPMSModeStandby:   printf("DPMSModeStandby\n"); break;    
+	    case DPMSModeSuspend:   printf("DPMSModeSuspend\n"); break;    
+	    case DPMSModeOff:       printf("DPMSModeOff\n"); break;    
+	    default:	            printf("Unknown DPMS Mode\n");    
+	    }
+	  }
 	}
+      } else if(e.type == SDL_MOUSEBUTTONUP) {
+	printf("Event SDL_MOUSEBUTTONUP (%d)@(%d,%d) at time %u\n", e.button.button, e.button.x, e.button.y, e.button.timestamp);
+	if(e.button.x > sw*0.9 && e.button.y > sh*0.9 && e.button.timestamp - last_button_timestamp > 1000) {
+
+	  printf("Setting DPMSForceLevel to DPMSModeOff\n");
+	  last_button_timestamp = e.button.timestamp;
+	  DPMSEnable(xd);
+	  XSync(xd, false);
+	  //	  usleep(100000);
+	  DPMSForceLevel(xd, DPMSModeOff);
+	  XSync(xd, false);
+	}
+	
       } else if(e.type == SDL_MOUSEBUTTONDOWN) {
 	printf("Event SDL_MOUSEBUTTONDOWN (%d)@(%d,%d)\n", e.button.button, e.button.x, e.button.y);
-      } else if(e.type == SDL_MOUSEBUTTONUP) {
-	printf("Event SDL_MOUSEBUTTONUP (%d)@(%d,%d)\n", e.button.button, e.button.x, e.button.y);
       } else if(e.type == SDL_FINGERDOWN) {
 	// printf("Event SDL_FINGERDOWN (%ld)@(%f,%f)\n", e.tfinger.touchId, e.tfinger.x, e.tfinger.y);
       }
@@ -172,9 +206,9 @@ int main(int argc, char *argv[]) {
       }
       //      printf("Cur_speed = %9.3f, dt %u, do %9.3f, Offset = %9.3f\n", cur_speed, render_start-last_start, delta_offset, offset);
     }
-    
-    SDL_RenderPresent(r);
 
+    SDL_RenderPresent(r);
+    
     ++count;
     struct timespec render_end;
     clock_gettime(CLOCK_MONOTONIC, &render_end);
@@ -205,12 +239,11 @@ int main(int argc, char *argv[]) {
   IMG_Quit();
   SDL_Quit();
 
+  XCloseDisplay(xd);
+
   printf("Generated %zu frames, average fps: %f, max fps: %f\n", count, (double)count*1e9/(double)(1e9*(end_time.tv_sec - start_time.tv_sec) + (end_time.tv_nsec - start_time.tv_nsec)), 1e9*count/total_consumed);
 
 
-  // Test DPMS control status, off, on
-  /// @TODO
-  
   // Test screen brightness control
   // My current screen on the Pi doesn't support software
   // brightness control, sadly.

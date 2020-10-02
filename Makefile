@@ -15,7 +15,7 @@ test:
 	$(MAKE) -C $(ROOTDIR)/src test
 
 exec:
-	$(MAKE) -C $(ROOTDIR)/src all
+	$(MAKE) -C $(ROOTDIR)/src exec
 
 images:
 	$(MAKE) -C $(ROOTDIR)/images -j$(nproc) all
@@ -77,3 +77,6 @@ mostlyclean-install: distclean-install
 
 distclean-install:
 	$(RM) -r $(INSTALLDIR)
+
+.DEFAULT:
+	$(MAKE) -C $(ROOTDIR)/src $(MAKECMDGOALS)

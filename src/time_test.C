@@ -13,14 +13,16 @@ int main(int argc, char* argv[]) {
   struct timespec now_real;
   struct timespec now_tai;
   struct timex details;
-
+  struct tm bdt;
+  
   memset(&details, 0, sizeof(struct timex));
   adjtimex(&details);
 
   clock_gettime(CLOCK_MONOTONIC, &now_mono);
   clock_gettime(CLOCK_TAI, &now_tai);
   clock_gettime(CLOCK_REALTIME, &now_real);
-
+  localtime_r(&now_real.tv_sec, &bdt);
+  
   bool offset_negative = false;
   struct timespec real_tai_offset;
   real_tai_offset.tv_sec = now_real.tv_sec - now_tai.tv_sec;
@@ -47,8 +49,10 @@ int main(int argc, char* argv[]) {
   printf("CLOCK_TAI:       %ld.%09ld (REALTIME %c %ld.%09ld)\n", now_tai.tv_sec, now_tai.tv_nsec, offset_negative ? '+':'-', real_tai_offset.tv_sec, real_tai_offset.tv_nsec);
   
   printf("adjtimex() reported tai_offset: %d\n", details.tai);
+  printf("localtime_r() reported TZ offset: %ld (%f minutes, or %f hours)\n", bdt.tm_gmtoff, (double)bdt.tm_gmtoff/60.0, (double)bdt.tm_gmtoff/60.0/60.0);
+  
 
-
+  
 
   return 0;
 }

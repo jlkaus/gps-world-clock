@@ -1,7 +1,7 @@
 ifneq (exec,$(notdir $(patsubst %/,%,$(dir $(CURDIR)))))
 include $(CURDIR)/../mk/target.mk
 else
-.PHONY: all test 
+.PHONY: exec test 
 
 include $(ROOTDIR)/mk/variables.mk
 
@@ -20,14 +20,19 @@ CXXDEFS = -DDEFAULT_IMAGE_ROOTDIR=$(DEFAULT_IMAGE_ROOTDIR) -DDEFAULT_GEOMETRY=$(
 CXXFLAGS = -std=gnu++11 -I$(INCDIR) -Wall -Werror $(CXXDEFS) -g -rdynamic
 LDLIBS = -lgps -lX11 -lXext -lSDL2 -lSDL2_image -lSDL2_ttf -lpthread -lm -lfontconfig
 
-all: $(PKGNAME)
+exec: $(PKGNAME)
 
-test: unit-test
+test: unit-test time_test
 
 unit-test: unit-test.o font-support.o Spacetime.o
 	$(LINK.cc) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
 unit-test.o: unit-test.C $(INCDIR)/font-support.H
+
+time_test: time_test.o
+	$(LINK.cc) $^ $(LOADLIBES) $(LDLIBS) -o $@
+
+time_test.o: time_test.C
 
 $(PKGNAME): $(PKGNAME).o Spacetime.o Render.o PhysicalDisplay.o font-support.o
 	$(LINK.cc) $^ $(LOADLIBES) $(LDLIBS) -o $@

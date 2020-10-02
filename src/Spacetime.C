@@ -25,23 +25,51 @@
 // - point of moon overhead
 // - local moonrise/transit/moonset
 
+Spacetime::Spacetime(): terminate(false), m(), self(&Spacetime::run, this)
+{}
 
-
-
-int gps_init() {
-  struct gps_data_t *gd = nullptr;
-  gps_open(GPSD_SHARED_MEMORY, NULL, gd);
-  return 0;
+Spacetime::~Spacetime() {
+  terminate.store(true, std::memory_order_release);
+  self.join();
 }
 
-int gps_done(struct gps_data_t *gd) {
-  gps_close(gd);
-  return 0;
+void Spacetime::init() {
+  assert(st == nullptr);
+  st = new Spacetime();
 }
 
-int gps_update(struct gps_data_t *gd) {
-  gps_read(gd, NULL, 0);
-  return 0;
+void Spacetime::destroy() {
+  Spacetime *tmp_s = st;
+  assert(tmp_s != nullptr);
+  st = nullptr;
+
+  delete tmp_s;
+}
+
+void Spacetime::run() {
+  m.lock();
+  gps_open(GPSD_SHARED_MEMORY, NULL, &gd);
+  m.unlock();
+  
+  while(!terminate.load(std::memory_order_acquire)) {
+    m.lock();
+    gps_read(&gd);
+    m.unlock();
+
+    // sleep for some time before next fetch.  Make this configurable?
+    // Most GPS units have new data on the order of once per second.
+    // We'll want to query more frequently than that by a few times to make sure
+    // we don't miss a transition.
+    // Also, making this really long would delay shutdown.
+    // For now, we'll read 10 times a second or so.
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
+
+  m.lock();
+  gps_close(&gd);
+  m.unlock();
+}
+
   // gps_data_t:
   //   gps_mask_t set
   //   timestamp_t online
@@ -61,26 +89,7 @@ int gps_update(struct gps_data_t *gd) {
   //   double ept
   //   double latitude, epy, longitude, epx, altitude, epv
   //   double track, epd, speed, eps, climb, epc
-  // gps_mask_t:
-  //   ONLINE_SET
-  //   TIME_SET
-  //   TIMERR_SET
-  //   LATLON_SET
-  //   HERR_SET
-  //   VERR_SET
-  //   ALTITUDE_SET
-  //   ATTITUDE_SET
-  //   SPEED_SET
-  //   SPEEDERR_SET
-  //   TRACK_SET
-  //   TRACKERR_SET
-  //   CLIMB_SET
-  //   CLIMBERR_SET
-  //   STATUS_SET
-  //   MODE_SET
-  //   SATELLITE_SET
 
-}
 
 
 

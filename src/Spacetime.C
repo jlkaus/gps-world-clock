@@ -3,8 +3,13 @@
 #include <thread>
 #include <atomic>
 #include <gps.h>
+#include <assert.h>
+//#define _GNU_SOURCE
+#include <pthread.h>
+#include <unistd.h>
+#include <sys/types.h>
 
-#include <Spacetime.H>
+#include "Spacetime.H"
 
 // Support a thread to update GPS data fairly consistently
 // If no GPS available, use system time & latitude/longitude that was
@@ -47,13 +52,14 @@ void Spacetime::destroy() {
 }
 
 void Spacetime::run() {
+  pthread_setname_np(self.native_handle(), "SPACETIME");
   m.lock();
   gps_open(GPSD_SHARED_MEMORY, NULL, &gd);
   m.unlock();
   
   while(!terminate.load(std::memory_order_acquire)) {
     m.lock();
-    gps_read(&gd);
+    gps_read(&gd, NULL, 0);
     m.unlock();
 
     // sleep for some time before next fetch.  Make this configurable?
@@ -89,6 +95,70 @@ void Spacetime::run() {
   //   double ept
   //   double latitude, epy, longitude, epx, altitude, epv
   //   double track, epd, speed, eps, climb, epc
+int Spacetime::getFixType() const {
+  int type = 0;
+  m.lock();
+  type = gd.fix.mode;
+  m.unlock();
+  return type;
+}
+
+double Spacetime::getAltitude() const {
+  double v = NaN;
+  m.lock();
+  if(gd.fix.mode > 1) {
+    v = gd.fix.altitude;
+  }
+  m.unlock();
+  return v;
+}
+
+double Spacetime::getTError() const {
+}
+
+double Spacetime::getXError() const {
+}
+
+double Spacetime::getYError() const {
+}
+
+double Spacetime::getVError() const {
+}
+
+std::vector<int> Spacetime::getSatellitesUsed() const {
+
+}
+
+std::vector<std::tuple<int, int, int, double> > Spacetime::getSatelliteInfo() const {
+
+}
+
+Location Spacetime::getLocation() const {
+  Location l;
+  l.longitude = NaN;
+  l.latitude = NaN;
+  m.lock();
+  if(gd.fix.mode > 1) {
+    l.longitude = gd.fix.longitude;
+    l.latitude = gd.fix.latitude;
+  } else {
+    l.longitude = DEFAULT_LONGITUDE;
+    l.latitude = DEFAULT_LATITUDE;
+  }
+  m.unlock();
+  return l;
+}
+
+SMoment Spacetime::getGPSTimestamp() const {
+  double l = NaN;
+  m.lock();
+  if(gd.fix.mode > 1) {
+    l = gd.fix.time;
+  }
+  m.unlock();
+  return v;
+}
+
 
 
 

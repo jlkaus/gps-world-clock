@@ -8,6 +8,8 @@
 #include <atomic>
 #include <time.h>
 #include <unistd.h>
+#include <execinfo.h>
+#include <signal.h>
 
 #include <gps.h>
 
@@ -19,6 +21,7 @@
 #include <X11/extensions/dpms.h>
 
 #include "font-support.H"
+#include "Spacetime.H"
 
 #define xstr(s) str(s)
 #define str(s) #s
@@ -28,7 +31,26 @@
 // Earth rotations per second
 #define SCROLL_RATE (1.0/(60.0))
 
+
+
+void handler(int sig) {
+  void *array[10];
+  size_t size;
+
+  // get void*'s for all entries on the stack
+  size = backtrace(array, 10);
+
+  // print out all the frames to stderr
+  fprintf(stderr, "Error: signal %d:\n", sig);
+  backtrace_symbols_fd(array, size, STDERR_FILENO);
+  exit(1);
+}
+
 int main(int argc, char *argv[]) {
+  signal(SIGSEGV, handler);
+  
+  Spacetime::init();
+  
   int fontsize = 24;
   uint32_t sw = 0;
   uint32_t sh = 0;
@@ -251,6 +273,7 @@ int main(int argc, char *argv[]) {
   // Test GPS connection
   /// @TODO
 
+  Spacetime::destroy();
   
   exit(0);
 }

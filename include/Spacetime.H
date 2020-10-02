@@ -5,6 +5,17 @@
 #include <vector>
 #include <time.h>
 #include <stdint.h>
+#include <tuple>
+#include <thread>
+#include <mutex>
+#include <atomic>
+
+class SMoment;
+class DMoment;
+class SDuration;
+class DDuration;
+class Location;
+class Spacetime;
 
 class SMoment {
 public:
@@ -44,7 +55,7 @@ public:
   SDuration operator-(const SDuration &rhs) const;
   SDuration operator+(const DDuration &rhs) const;
   SDuration operator-(const DDuration &rhs) const;
-  STimestamp operator+(const STimestamp &rhs) const;
+  SMoment operator+(const SMoment &rhs) const;
 
   void sleepFor() const;
 };
@@ -82,7 +93,7 @@ public:
   DDuration operator-(const DDuration &rhs) const;
   DDuration operator+(const SDuration &rhs) const;
   DDuration operator-(const SDuration &rhs) const;
-  DTimestamp operator+(const DTimestamp &rhs) const;
+  DMoment operator+(const DMoment &rhs) const;
 };
 
 class Location {
@@ -110,32 +121,32 @@ public:
 public:
   static SDuration getLeapSecondsAdded();
   static SDuration getLocalTimezoneOffset();
-  static double getGMSTfromPosixUTC(STimestamp posix_utc);
-  static double getGMSTfromJD2000UTC(DTimestamp jd2000_utc);
-  static DTimestamp getJD2000UTCfromGMST(DTimestamp jd2000_utc, double);
+  static double getGMSTfromPosixUTC(SMoment posix_utc);
+  static double getGMSTfromJD2000UTC(DMoment jd2000_utc);
+  static DMoment getJD2000UTCfromGMST(DMoment jd2000_utc, double);
   static double getLMSTfromGMST(double gmst, Location l);
-  static STimestamp getLocalTimeFromUTC(STimestamp posix_utc, SDuration tz_offset);
-  static STimestamp getLocalApparentTimeFromUTC(STimestamp posix_utc, Location l);
+  static SMoment getLocalTimeFromUTC(SMoment posix_utc, SDuration tz_offset);
+  static SMoment getLocalApparentTimeFromUTC(SMoment posix_utc, Location l);
   
-  static Spacetime::DayState getLocalDayState(STimestamp posix_utc, Location l);
-  static SDuration getLocalDayLength(STimestamp posix_utc, Location l);  // if we're in the day, get current day length, if in the night, get next day length
-  static SDuration getLocalNightLength(STimestamp posix_utc, Location l); // if we're in the night, get current night length, if in the day, get next night length
+  static Spacetime::DayState getLocalDayState(SMoment posix_utc, Location l);
+  static SDuration getLocalDayLength(SMoment posix_utc, Location l);  // if we're in the day, get current day length, if in the night, get next day length
+  static SDuration getLocalNightLength(SMoment posix_utc, Location l); // if we're in the night, get current night length, if in the day, get next night length
   
-  static double getSolarDeclination(DTimestamp jd2000_utc);
-  static double getRightAscension(DTimestamp jd2000_utc);
-  static double getLocalSolarElevation(DTimestamp jd2000_utc, Location l);
-  static double getLocalHourAngle(DTimestamp jd2000_utc, Location l);
+  static double getSolarDeclination(DMoment jd2000_utc);
+  static double getRightAscension(DMoment jd2000_utc);
+  static double getLocalSolarElevation(DMoment jd2000_utc, Location l);
+  static double getLocalHourAngle(DMoment jd2000_utc, Location l);
   
-  static double getEclipticObliquity(DTimestamp jd2000_utc);
-  static double getEclipticLongitude(DTimestamp jd2000_utc);
+  static double getEclipticObliquity(DMoment jd2000_utc);
+  static double getEclipticLongitude(DMoment jd2000_utc);
 
-  static std::vector<double> getGMSTOfLocalSolarElevation(DTimestamp jd2000_utc, Location l, double a);
-  static STimestamp getUTCOfLocalMidnight(STimestamp utc, Location l, int index);
-  static STimestamp getUTCOfLocalNoon(STimestamp utc, Location l, int index);
-  static STimestamp getUTCOfLocalSunrise(STimestamp utc, Location l, int index);
-  static STimestamp getUTCOfLocalSunset(STimestamp utc, Location l, int index);
-  static STimestamp getUTCOfLocalDawn(STimestamp utc, Location l, int index);
-  static STimestamp getUTCOfLocalDusk(STimestamp utc, Location l, int index);
+  static std::vector<double> getGMSTOfLocalSolarElevation(DMoment jd2000_utc, Location l, double a);
+  static SMoment getUTCOfLocalMidnight(SMoment utc, Location l, int index);
+  static SMoment getUTCOfLocalNoon(SMoment utc, Location l, int index);
+  static SMoment getUTCOfLocalSunrise(SMoment utc, Location l, int index);
+  static SMoment getUTCOfLocalSunset(SMoment utc, Location l, int index);
+  static SMoment getUTCOfLocalDawn(SMoment utc, Location l, int index);
+  static SMoment getUTCOfLocalDusk(SMoment utc, Location l, int index);
 
   int getFixType() const;
   double getAltitude() const;
@@ -146,7 +157,7 @@ public:
   std::vector<int> getSatellitesUsed() const;
   std::vector<std::tuple<int, int, int, double> > getSatelliteInfo() const;
   Location getLocation() const;
-  STimestamp getGPSTimestamp() const;
+  SMoment getGPSTimestamp() const;
 
   Spacetime();
   ~Spacetime();

@@ -251,7 +251,11 @@ void Spacetime::run() {
   while(!terminate.load(std::memory_order_acquire)) {
     if(valid.load(std::memory_order_acquire)) {
       m.lock();
+#if GPSD_API_MAJOR_VERSION <= 6
+      gps_read(&gd);
+#else
       gps_read(&gd, NULL, 0);
+#endif
       m.unlock();
     }
     

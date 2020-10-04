@@ -50,6 +50,8 @@ int main(int argc, char *argv[]) {
   signal(SIGSEGV, handler);
   
   Spacetime::init();
+
+  
   SDuration tai_offset = Spacetime::getCurrentTAIOffset();
   SDuration tz_offset = Spacetime::getLocalTimezoneOffset();
   SMoment now_mono = SMoment::nowMono();
@@ -69,6 +71,12 @@ int main(int argc, char *argv[]) {
   uint32_t sx = 0;
   uint32_t sy = 0;
 
+  if(getenv("DISPLAY") == NULL) {
+    printf("DISPLAY not set.\n");
+    exit(1);
+  }
+			     
+  
   Display *xd = XOpenDisplay(NULL);
   int xsi = XDefaultScreen(xd);
   sw = XDisplayWidth(xd, xsi);

@@ -22,6 +22,10 @@ public:
   time_t s;
   long ns;
 
+  SMoment(): s(0), ns(0) {}
+  SMoment(double t);
+  SMoment(time_t a, long b);
+  
   static SMoment nowSystem_UTC();
   static SMoment nowGPS_UTC();
   static SMoment nowMono();
@@ -42,6 +46,7 @@ public:
   SDuration operator-(const SMoment &rhs) const;
   SMoment operator+(const DDuration &rhs) const;
   SMoment operator-(const DDuration &rhs) const;
+  void renormalize();
 };
 
 class SDuration {
@@ -50,14 +55,16 @@ public:
   long ns;
 
   SDuration(const DDuration &rhs);
+  SDuration(time_t a, long b);
   
+  void sleepFor() const;
+
   SDuration operator+(const SDuration &rhs) const;
   SDuration operator-(const SDuration &rhs) const;
   SDuration operator+(const DDuration &rhs) const;
   SDuration operator-(const DDuration &rhs) const;
   SMoment operator+(const SMoment &rhs) const;
-
-  void sleepFor() const;
+  void renormalize();
 };
 
 class DMoment {
@@ -65,6 +72,8 @@ public:
   int64_t i;
   double f;
 
+  DMoment(int64_t a, double b): i(a), f(b) {}
+  
   static DMoment JDfromPosix(const SMoment &rhs);
   static DMoment JD2000fromPosix(const SMoment &rhs);
 
@@ -80,6 +89,7 @@ public:
   DDuration operator-(const DMoment &rhs) const;
   DMoment operator+(const SDuration &rhs) const;
   DMoment operator-(const SDuration &rhs) const;
+  void renormalize();
 };
 
 class DDuration {
@@ -88,18 +98,22 @@ public:
   double f;
 
   DDuration(const SDuration &rhs);
+  DDuration(int64_t a, double b): i(a), f(b) {}
   
   DDuration operator+(const DDuration &rhs) const;
   DDuration operator-(const DDuration &rhs) const;
   DDuration operator+(const SDuration &rhs) const;
   DDuration operator-(const SDuration &rhs) const;
   DMoment operator+(const DMoment &rhs) const;
+  void renormalize();
 };
 
 class Location {
 public:
   double longitude;
   double latitude;
+
+  Location(double a, double b): longitude(a), latitude(b) {}
 
   static Location here();
   static Location fromCoordinateSpace(size_t x, size_t y, size_t width, size_t height);
@@ -119,7 +133,7 @@ public:
   };
 
 public:
-  static SDuration getLeapSecondsAdded();
+  static SDuration getCurrentTAIOffset();
   static SDuration getLocalTimezoneOffset();
   static double getGMSTfromPosixUTC(SMoment posix_utc);
   static double getGMSTfromJD2000UTC(DMoment jd2000_utc);
@@ -170,6 +184,7 @@ public:
   
 
   std::atomic<bool> terminate;
+  std::atomic<bool> valid;
   mutable std::mutex m;
   struct gps_data_t gd;
   std::thread self;

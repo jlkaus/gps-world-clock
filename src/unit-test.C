@@ -50,6 +50,18 @@ int main(int argc, char *argv[]) {
   signal(SIGSEGV, handler);
   
   Spacetime::init();
+  SDuration tai_offset = Spacetime::getCurrentTAIOffset();
+  SDuration tz_offset = Spacetime::getLocalTimezoneOffset();
+  SMoment now_mono = SMoment::nowMono();
+  SMoment now_utc_sys = SMoment::nowSystem_UTC();
+  SMoment now_utc_gps = SMoment::nowGPS_UTC();
+
+  printf("TAI_Offset: %ld\n", tai_offset.s);
+  printf("TZ_Offset:  %ld\n", tz_offset.s);
+  printf("Now mono:      %ld.%09ld\n", now_mono.s, now_mono.ns);
+  printf("    UTC(sys):  %ld.%09ld\n", now_utc_sys.s, now_utc_sys.ns);
+  printf("    UTC(gps):  %ld.%09ld\n", now_utc_gps.s, now_utc_gps.ns);
+  
   
   int fontsize = 24;
   uint32_t sw = 0;

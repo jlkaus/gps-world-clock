@@ -110,10 +110,10 @@ public:
 
 class Location {
 public:
-  double longitude;
   double latitude;
+  double longitude;
 
-  Location(double a, double b): longitude(a), latitude(b) {}
+  Location(double a, double b): latitude(a), longitude(b) {}
 
   static Location here();
   static Location fromCoordinateSpace(size_t x, size_t y, size_t width, size_t height);

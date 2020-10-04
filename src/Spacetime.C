@@ -336,7 +336,7 @@ double Spacetime::getAltitude() const {
 //}
 
 Location Spacetime::getLocation() const {
-  Location l(DEFAULT_LONGITUDE, DEFAULT_LATITUDE);
+  Location l(DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
   if(valid.load(std::memory_order_acquire)) {
     m.lock();
     if(gd.fix.mode > 1) {

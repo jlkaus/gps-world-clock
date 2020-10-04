@@ -56,8 +56,8 @@ DEFAULT_GEOMETRY ?= $(TARGET_GEOMETRY)
 # Samsung 4K monitor (28"): 3840x2160 (1920x1080 quad) [158 dpi]
 # 5" segment of samsung 4k screen: 680x400
 
-DEFAULT_LONGITUDE ?= "43.761463"
-DEFAULT_LATITUDE ?= "-90.490470"
+DEFAULT_LATITUDE ?= "43.761463"
+DEFAULT_LONGITUDE ?= "-90.490470"
 # 43.761463,-90.490470 - The South Ridge cemetary
 # 45.000000,-90.000000 - Near Wausau
 # 45.035423,-87.885620 - Mom & Dad's in Grover

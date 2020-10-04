@@ -57,13 +57,15 @@ int main(int argc, char *argv[]) {
   SMoment now_mono = SMoment::nowMono();
   SMoment now_utc_sys = SMoment::nowSystem_UTC();
   SMoment now_utc_gps = SMoment::nowGPS_UTC();
+  Location here = Location::here();
 
+  
   printf("TAI_Offset: %ld\n", tai_offset.s);
   printf("TZ_Offset:  %ld\n", tz_offset.s);
   printf("Now mono:      %ld.%09ld\n", now_mono.s, now_mono.ns);
   printf("    UTC(sys):  %ld.%09ld\n", now_utc_sys.s, now_utc_sys.ns);
   printf("    UTC(gps):  %ld.%09ld\n", now_utc_gps.s, now_utc_gps.ns);
-  
+  printf("Location:    %12.8f, %12.8f\n", here.latitude, here.longitude);
   
   int fontsize = 24;
   uint32_t sw = 0;

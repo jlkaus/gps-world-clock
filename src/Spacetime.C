@@ -317,23 +317,63 @@ double Spacetime::getAltitude() const {
   return v;
 }
 
-//double Spacetime::getTError() const {
-//}
+double Spacetime::getTError() const {
+  double e = 0.0;
+  if(valid.load(std::memory_order_acquire)) {
+    m.lock();
+    if(gd.fix.mode > 1) {
+      e = gd.fix.ept;
+    }
+    m.unlock();
+  }
+  return e;
+}
 
-//double Spacetime::getXError() const {
-//}
+double Spacetime::getXError() const {
+  double e = 0.0;
+  if(valid.load(std::memory_order_acquire)) {
+    m.lock();
+    if(gd.fix.mode > 1) {
+      e = gd.fix.epx;
+    }
+    m.unlock();
+  }
+  return e;
+}
 
-//double Spacetime::getYError() const {
-//}
+double Spacetime::getYError() const {
+  double e = 0.0;
+  if(valid.load(std::memory_order_acquire)) {
+    m.lock();
+    if(gd.fix.mode > 1) {
+      e = gd.fix.epy;
+    }
+    m.unlock();
+  }
+  return e;
+}
 
-//double Spacetime::getVError() const {
-//}
+double Spacetime::getVError() const {
+  double e = 0.0;
+  if(valid.load(std::memory_order_acquire)) {
+    m.lock();
+    if(gd.fix.mode > 1) {
+      e = gd.fix.epv;
+    }
+    m.unlock();
+  }
+  return e;
+}
 
-//std::vector<int> Spacetime::getSatellitesUsed() const {
-//}
+std::vector<int> Spacetime::getSatellitesUsed() const {
 
-//std::vector<std::tuple<int, int, int, double> > Spacetime::getSatelliteInfo() const {
-//}
+
+}
+
+std::vector<std::tuple<int, int, int, double> > Spacetime::getSatelliteInfo() const {
+
+
+}
 
 Location Spacetime::getLocation() const {
   Location l(DEFAULT_LATITUDE, DEFAULT_LONGITUDE);

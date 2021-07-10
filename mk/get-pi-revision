@@ -34,8 +34,8 @@ my %models = ();
 while(<DATA>) {
   chomp;
   next if /^\s*$/ || /^\s*#/;
-  my ($rev, $rel, $mod, $pcb, $mfg) = split /\t/;
-  $models{$rev} = {rel=>$rel, mod=>$mod, pcb=>$pcb, mfg=>$mfg}:
+  my ($rev, $rel, $mod, $pcb, $mem, $mfg) = split /\t/;
+  $models{$rev} = {rel=>$rel, mod=>$mod, pcb=>$pcb, mem=>$mem, mfg=>$mfg}:
 }
 
 
@@ -72,43 +72,55 @@ exit(0);
 
 __DATA__
 # Adapted from table at https://elinux.org/RPi_HardwareHistory#Board_Revision_History
-Beta	2012Q1	B1	0.1b	RS-Components
-0002	2012Q1	B1	1.0	RS-Components
-0003	2012Q3	B1	1.0e1	RS-Components
-0004	2012Q3	B1	2.0	Sony
-0005	2012Q4	B1	2.0	Qisda
-0006	2012Q4	B1	2.0	Egoman
-000d	2012Q4	B1	2.0	Egoman
-000e	2012Q4	B1	2.0	Sony
-000f	2012Q4	B1	2.0	Qisda
+Beta	2012Q1	B1	0.1b	256M	RS-Components
+0002	2012Q1	B1	1.0	256M	RS-Components
+0003	2012Q3	B1	1.0e1	256M	RS-Components
+0004	2012Q3	B1	2.0	256M	Sony
+0005	2012Q4	B1	2.0	256M	Qisda
+0006	2012Q4	B1	2.0	256M	Egoman
+000d	2012Q4	B1	2.0	512M	Egoman
+000e	2012Q4	B1	2.0	512M	Sony
+000f	2012Q4	B1	2.0	512M	Qisda
 
-0007	2013Q1	A1	2.0	Egoman
-0008	2013Q1	A1	2.0	Sony
-0009	2013Q1	A1	2.0	Qisda
+0007	2013Q1	A1	2.0	256M	Egoman
+0008	2013Q1	A1	2.0	256M	Sony
+0009	2013Q1	A1	2.0	256M	Qisda
 
-0011	2014Q2	CM1	1.0	Sony
-0014	2014Q2	CM1	1.0	Embest
-0010	2014Q3	B1+	1.0	Sony
-0012	2014Q4	A1+	1.1	Sony
+0011	2014Q2	CM1	1.0	512M	Sony
+0014	2014Q2	CM1	1.0	512M	Embest
+0010	2014Q3	B1+	1.0	512M	Sony
+0012	2014Q4	A1+	1.1	256M	Sony
 
-0013	2015Q1	B1+	1.2	Embest
-0015	unknown-release	A1+	1.1	Embest
-a01040	unknown-release	B2	1.0	Sony
-a01041	2015Q1	B2	1.1	Sony
-a21041	2015Q1	B2	1.1	Embest
-900092	2015Q4	Z	1.2	Sony
+0013	2015Q1	B1+	1.2	512M	Embest
+0015	unknown-release	A1+	1.1	256M/512M	Embest
+a01040	unknown-release	B2	1.0	1G	Sony
+a01041	2015Q1	B2	1.1	1G	Sony
+a21041	2015Q1	B2	1.1	1G	Embest
+900092	2015Q4	Z	1.2	512M	Sony
 
-a02082	2016Q1	B3	1.2	Sony
-a22082	2016Q1	B3	1.2	Embest
-900032	2016Q2	B1+	1.2	Sony
-900093	2016Q2	Z	1.3	Sony
-a22042	2016Q3	B2	1.2	Embest
-900021	2016Q3	A1+	1.1	Sony
-920093	2016Q4	Z	1.3	Embest
-a32082	2016Q4	B3	1.2	Sony-Japan
+a02082	2016Q1	B3	1.2	1G	Sony
+a22082	2016Q1	B3	1.2	1G	Embest
+900032	2016Q2	B1+	1.2	512M	Sony
+900093	2016Q2	Z	1.3	512M	Sony
+a22042	2016Q3	B2	1.2	1G	Embest
+900021	2016Q3	A1+	1.1	512M	Sony
+920093	2016Q4	Z	1.3	512M	Embest
+a32082	2016Q4	B3	1.2	1G	Sony-Japan
 
-9000c1	2017Q1	ZW	1.1	Sony
-a020a0	2017Q1	CM3	1.0	Sony
+9000c1	2017Q1	ZW	1.1	512M	Sony
+a020a0	2017Q1	CM3	1.0	1G	Sony
 
-a020d3	2018Q1	B3+	1.3	Sony
-9020e0	2018Q4	A3+	1.0	Sony
+a020d3	2018Q1	B3+	1.3	1G	Sony
+9020e0	2018Q4	A3+	1.0	512M	Sony
+
+a02100	2019Q1	CM3+	1.0	1 GB	Sony
+a03111	2019Q2	B4	1.1	1 GB	Sony
+b03111	2019Q2	B4	1.1	2 GB	Sony
+b03112	2019Q2	B4	1.2	2 GB	Sony
+c03111	2019Q2	B4	1.1	4 GB	Sony
+c03112	2019Q2	B4	1.2	4 GB	Sony
+
+b03114	2020Q2	B4	1.4	2 GB	Sony
+c03114	2020Q2	B4	1.4	4 GB	Sony
+d03114	2020Q2	B4	1.4	8 GB	Sony
+

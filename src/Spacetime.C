@@ -367,12 +367,12 @@ double Spacetime::getVError() const {
 
 std::vector<int> Spacetime::getSatellitesUsed() const {
 
-
+	return {};
 }
 
 std::vector<std::tuple<int, int, int, double> > Spacetime::getSatelliteInfo() const {
 
-
+	return {};
 }
 
 Location Spacetime::getLocation() const {

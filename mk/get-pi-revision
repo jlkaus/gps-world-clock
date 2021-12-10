@@ -20,7 +20,7 @@ while(shift) {
   } elsif($_ eq "--model" || $_ eq "-m") {
     $args{mod} = 1;
   } elsif($_ eq "--pcb" || $_ eq "-p") {
-    $args{pcb) = 1;
+    $args{pcb} = 1;
   } elsif($_ eq "--manufacturer" || $_ eq "-g") {
     $args{mfg} = 1;
   } elsif($_ eq "--release" || $_ eq "-d") {
@@ -35,7 +35,7 @@ while(<DATA>) {
   chomp;
   next if /^\s*$/ || /^\s*#/;
   my ($rev, $rel, $mod, $pcb, $mem, $mfg) = split /\t/;
-  $models{$rev} = {rel=>$rel, mod=>$mod, pcb=>$pcb, mem=>$mem, mfg=>$mfg}:
+  $models{$rev} = {rel=>$rel, mod=>$mod, pcb=>$pcb, mem=>$mem, mfg=>$mfg};
 }
 
 
@@ -49,7 +49,7 @@ $rev =~ s/^Revision\s*:\s*(?:1000)?//;
 
 # Figure out what to display given the arguments
 my @display = ();
-push @display, $rev if($no_args || $args{rev})); 
+push @display, $rev if($no_args || $args{rev});
 if(defined $models{$rev}) {
   my $m = $models{$rev};
   if($no_args || ($args{mod} && $args{pcb})) {
@@ -124,3 +124,4 @@ b03114	2020Q2	B4	1.4	2 GB	Sony
 c03114	2020Q2	B4	1.4	4 GB	Sony
 d03114	2020Q2	B4	1.4	8 GB	Sony
 
+902120	2021Q4	Z2W	1.0	512M	Sony
